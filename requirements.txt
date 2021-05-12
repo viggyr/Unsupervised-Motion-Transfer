@@ -15,9 +15,6 @@ tensorboardX
 torch>=1.2.0
 torchvision
 tqdm
-#tensorflow==1.9.0
 tqdm
 opencv-python
-#skimage
 imageio
-detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/torch1.8/index.html

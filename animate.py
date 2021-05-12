@@ -20,13 +20,10 @@ def main():
     retarget(args.source, args.target, args.output_video_path)
 
 def retarget(source_path: str, target_path: str, output_video_path: str):
-    
-#     print("Extracting keypoints.")
-#     source_keypoints, target_keypoints = extract_sequence(source_path, target_path)
-#     print("Extracted keypoints.")
+    #source_keypoints, target_keypoints = extract_sequence(source_path, target_path)
     source_keypoints = np.load("inputs/source.npy")
     target_keypoints = np.load("inputs/target.npy")
-    t = time.time()
+    print("Extracted keypoints.")
     transfer_motion_and_generate_video(source_keypoints, target_keypoints, "outputs/skeleton.mp4")
     print("Transferred motion.")
     #transferred_skeleton_video = generate_skeleton_video(transferred_keypoints_sequence)
@@ -37,7 +34,6 @@ def retarget(source_path: str, target_path: str, output_video_path: str):
     frame = frame[:shape_dst, ow:ow + shape_dst]
     frame = cv2.resize(frame, (512, 512))
     convert_skeleton_to_target("outputs/skeleton.mp4", output_video_path, frame)
-    print(f"Total Time taken {time.time()-t}")
 
 if __name__ == "__main__":
     main()
