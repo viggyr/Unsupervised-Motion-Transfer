@@ -43,7 +43,7 @@ triplet_neg_range: [0.0, 0.5] # triplet loss: range of negative examples
 autoencoder:
   cls: Autoencoder3f
   body_reference: *body_reference
-  source_type: video
+  source_type: image
   motion_encoder:
     cls: ConvEncoder
     channels: [30, 64, 128, 128]

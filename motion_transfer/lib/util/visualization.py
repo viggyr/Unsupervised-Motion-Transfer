@@ -5,8 +5,8 @@ import math
 import imageio
 from tqdm import tqdm
 from PIL import Image
-from lib.util.motion import normalize_motion_inv, globalize_motion
-from lib.util.general import ensure_dir
+from .motion import normalize_motion_inv, globalize_motion
+from .general import ensure_dir
 from threading import Thread, Lock
 
 
@@ -32,7 +32,7 @@ def two_pts_to_rectangle(point1, point2):
 
 
 def rgb2rgba(color):
-    return (color[0], color[1], color[2], 255)
+    return (int(color[0]), int(color[1]), int(color[2]), 255)
 
 
 def hex2rgb(hex, number_of_colors=3):
@@ -72,9 +72,9 @@ def joints2image(joints_position, colors, transparency=False, H=512, W=512, nr_j
                    [8, 9], [8, 12], [9, 10], [10, 11], [12, 13], [13, 14]]
                     # [0, 15], [0, 16] two eyes are not drawn
 
-        L = rgb2rgba(colors[0]) if transparency else colors[0]
-        M = rgb2rgba(colors[1]) if transparency else colors[1]
-        R = rgb2rgba(colors[2]) if transparency else colors[2]
+        L = rgb2rgba(colors[0]) if transparency else (int(colors[0][0]), int(colors[0][1]), int(colors[0][2]))
+        M = rgb2rgba(colors[1]) if transparency else (int(colors[1][0]), int(colors[1][1]), int(colors[1][2]))
+        R = rgb2rgba(colors[2]) if transparency else (int(colors[2][0]), int(colors[2][1]), int(colors[2][2]))
 
         colors_joints = [M, M, L, L, L, R, R,
                          R, M, L, L, L, R, R, R]
@@ -96,7 +96,6 @@ def joints2image(joints_position, colors, transparency=False, H=512, W=512, nr_j
     end_effectors_radius = int(torso_length/15)
     end_effectors_radius = 7
     joints_radius = 7
-
     cv2.circle(canvas, (int(joints_position[0][0]),int(joints_position[0][1])), head_radius, colors_joints[0], thickness=-1)
 
     for i in range(1, len(colors_joints)):
@@ -106,7 +105,7 @@ def joints2image(joints_position, colors, transparency=False, H=512, W=512, nr_j
             radius = 2
         else:
             radius = joints_radius
-        cv2.circle(canvas, (int(joints_position[i][0]),int(joints_position[i][1])), radius, colors_joints[i], thickness=-1)
+        cv2.circle(canvas, (int(joints_position[i][0]),int(joints_position[i][1])), radius, colors_joints[0], thickness=-1)
 
     stickwidth = 2
 

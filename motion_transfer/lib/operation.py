@@ -4,9 +4,9 @@ import numpy as np
 import imageio
 from math import pi
 from tqdm import tqdm
-from lib.data import get_dataloader, get_meanpose
-from lib.util.general import get_config
-from lib.util.visualization import motion2video_np, hex2rgb
+from .data import get_dataloader, get_meanpose
+from .util.general import get_config
+from .util.visualization import motion2video_np, hex2rgb
 import os
 
 eps = 1e-16

@@ -16,4 +16,11 @@ class TestOptions(BaseOptions):
         self.parser.add_argument("--engine", type=str, help="run serialized TRT engine")
         self.parser.add_argument("--onnx", type=str, help="run ONNX model via TRT")
         self.parser.add_argument('--use_first_frame', action='store_true', help='If enabled, use first ground truth frame')
+        self.parser.add_argument('-s', '--source', type=str, required=True,
+                        help='Path to the source video. Motion would be extracted from this video and applied to the target.')
+        self.parser.add_argument('-t', '--target', type=str, required=True,
+                        help='Path to the target image. Structure and view would be extracted from this and clubbed with the motion of source video.')
+ 
+        self.parser.add_argument('-o','--output_video_path', type=str,
+                        help="Path to output directory")
         self.isTrain = False

@@ -1,10 +1,10 @@
 import torch.utils.data
-from data.base_data_loader import BaseDataLoader
+from .base_data_loader import BaseDataLoader
 
 
 def CreateDataset(opt):
     dataset = None
-    from data.aligned_pair_dataset import AlignedPairDataset
+    from .aligned_pair_dataset import AlignedPairDataset
     dataset = AlignedPairDataset()
 
     print("dataset [%s] was created" % (dataset.name()))

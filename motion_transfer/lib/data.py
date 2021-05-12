@@ -1,7 +1,7 @@
 import sys, os
 thismodule = sys.modules[__name__]
 
-from lib.util.motion import preprocess_mixamo, rotate_motion_3d, limb_scale_motion_2d, normalize_motion, get_change_of_basis, localize_motion, scale_limbs
+from .util.motion import preprocess_mixamo, rotate_motion_3d, limb_scale_motion_2d, normalize_motion, get_change_of_basis, localize_motion, scale_limbs
 
 import torch
 import glob

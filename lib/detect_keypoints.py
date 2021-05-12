@@ -44,23 +44,7 @@ def convert_coco_to_openpose_cords(coco_keypoints):
     body_25_points=np.insert(body_25_points, 8, np.array([mid_hip_x, mid_hip_y]) ,axis=1)
     return body_25_points[:,:15,:]
 
-def find_video_keypoints(video_path: str):
-    video=cv2.VideoCapture(video_path)
-    video_keypoints=generate_keypoints_from_video(video)
-    final_keypoints=None
-    for i,frame_keypoints in enumerate(video_keypoints):
-    try:
-        frame_keypoints_transformed=convert_coco_to_openpose_cords(frame_keypoints.to("cpu").numpy()[-1:,:,:]).transpose(1,2,0)
-    except:
-        print(f"Failed to extact keypoints for frame {i}.")
-        continue
-    if final_keypoints is not None:
-        final_keypoints=np.concatenate((final_keypoints, frame_keypoints_transformed), axis=2)
-    else:
-        final_keypoints=frame_keypoints_transformed
-    return final_keypoints
-
-def extract_sequence(source_video_path, target_video_path):
+def predict(original_image):
     model = build_model(cfg)
     model.eval()
     checkpointer = DetectionCheckpointer(model)
@@ -68,6 +52,37 @@ def extract_sequence(source_video_path, target_video_path):
     aug = T.ResizeShortestEdge(
                 [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
             )
+    with torch.no_grad():  
+        height, width = original_image.shape[:2]
+        image = aug.get_transform(original_image).apply_image(original_image)
+        image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
+        inputs = {"image": image, "height": height, "width": width}
+        predictions = model([inputs])[0]
+        return predictions["instances"].pred_keypoints
+    
+def generate_keypoints(video):
+    frame_gen=frame_from_video(video)
+    for frame in frame_gen:
+        yield predict(frame)
+    
+def find_video_keypoints(video_path: str):
+    video=cv2.VideoCapture(video_path)
+    video_keypoints=generate_keypoints(video)
+    final_keypoints=None
+    for i,frame_keypoints in enumerate(video_keypoints):
+        try:
+            frame_keypoints_transformed=convert_coco_to_openpose_cords(frame_keypoints.to("cpu").numpy()[-1:,:,:]).transpose(1,2,0)
+            print(f"Frame {i} extracted")
+        except:
+            print(f"Failed to extact keypoints for frame {i}.")
+            continue
+        if final_keypoints is not None:
+            final_keypoints=np.concatenate((final_keypoints, frame_keypoints_transformed), axis=2)
+        else:
+            final_keypoints=frame_keypoints_transformed
+    return final_keypoints
+
+def extract_sequence(source_video_path, target_video_path):
     source_keypoints=find_video_keypoints(source_video_path)
     target_keypoints=find_video_keypoints(target_video_path)
     return source_keypoints, target_keypoints

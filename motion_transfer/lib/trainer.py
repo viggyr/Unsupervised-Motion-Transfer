@@ -4,10 +4,10 @@ import torch.nn as nn
 import numpy as np
 import random
 import lib.network
-from lib.loss import *
-from lib.util.general import weights_init, get_model_list, get_scheduler
-from lib.network import Discriminator
-from lib.operation import rotate_and_maybe_project_learning
+from .loss import *
+from .util.general import weights_init, get_model_list, get_scheduler
+from .network import Discriminator
+from .operation import rotate_and_maybe_project_learning
 
 class BaseTrainer(nn.Module):
 

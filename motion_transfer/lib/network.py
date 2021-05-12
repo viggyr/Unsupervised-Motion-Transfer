@@ -174,15 +174,15 @@ class Autoencoder3f(nn.Module):
         self.body_reference = config.body_reference
 
         if config.source_type == "video":
-            body_encoder = config.body_encoder.cls
+            body_encoder = config.body_encoder
         else:
-            body_encoder = config.body_encoder_image.cls
+            body_encoder = config.body_encoder_image
         motion_cls = getattr(thismodule, config.motion_encoder.cls)
-        body_cls = getattr(thismodule, body_encoder)
+        body_cls = getattr(thismodule, body_encoder.cls)
         view_cls = getattr(thismodule, config.view_encoder.cls)
 
         self.motion_encoder = motion_cls.build_from_config(config.motion_encoder)
-        self.body_encoder = body_cls.build_from_config(config.body_encoder)
+        self.body_encoder = body_cls.build_from_config(body_encoder)
         self.view_encoder = view_cls.build_from_config(config.view_encoder)
         self.decoder = ConvDecoder.build_from_config(config.decoder)
 
@@ -196,15 +196,20 @@ class Autoencoder3f(nn.Module):
         motion_code_seq = self.motion_encoder(seqs)
         return motion_code_seq
 
-    def encode_body(self, seqs):
+    def encode_body(self, seqs, video=True):
         body_code_seq = None
-        for i in range(len(seqs[0,0,:])):
-            body_code_i = self.body_encoder(seqs[:,:,i])
-            body_code_seq = torch.cat([body_code_seq, body_code_i], dim=2) if body_code_seq is not None else body_code_i
+        if video:
+            body_code_seq = self.body_encoder(seqs)
+            kernel_size = body_code_seq.size(-1)
+            body_code = self.body_pool(body_code_seq, kernel_size)  if self.body_pool is not None else body_code_seq
+        else:
+            for i in range(len(seqs[0,0,:])):
+                body_code_i = self.body_encoder(seqs[:,:,i])
+                body_code_seq = torch.cat([body_code_seq, body_code_i], dim=2) if body_code_seq is not None else body_code_i
         
-        kernel_size = body_code_seq.size(-1)
-        #body_code = self.body_pool(body_code_seq, kernel_size)  if self.body_pool is not None else body_code_seq
-        return body_code_seq[:,:,0].unsqueeze(2), body_code_seq
+            kernel_size = body_code_seq.size(-1)
+            body_code = body_code_seq[:,:,0].unsqueeze(2)
+        return body_code, body_code_seq
 
     def encode_view(self, seqs):
         view_code_seq = self.view_encoder(seqs)
@@ -228,9 +233,9 @@ class Autoencoder3f(nn.Module):
         out = self.decode(motion_a, body_b, view_c)
         return out
 
-    def cross2d(self, x_a, x_b, x_c):
+    def cross2d(self, x_a, x_b, x_c, video=True):
         motion_a = self.encode_motion(x_a)
-        body_b, _ = self.encode_body(x_b)
+        body_b, _ = self.encode_body(x_b, video)
         view_c, _ = self.encode_view(x_c)
         out = self.decode(motion_a, body_b, view_c)
         batch_size, channels, seq_len = out.size()
