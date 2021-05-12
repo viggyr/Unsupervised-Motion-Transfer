@@ -6,21 +6,22 @@ from pathlib import Path
 import os
 from collections import OrderedDict
 from pathlib import Path
-from options.test_options import TestOptions
-from motion_transfer.data.custom_dataset_data_loader import CreateDataset
-from motion_transfer.models.models import create_model
-import motion_transfer.util.util as util
+from skeleton_to_human.options.test_options import TestOptions
+from skeleton_to_human.data.custom_dataset_data_loader import CreateDataset
+from skeleton_to_human.models.models import create_model
+import skeleton_to_human.util.util as util
 import torch
 from imageio import get_writer
 import numpy as np
 from tqdm import tqdm
+import cv2
 
 
 def save_frames_from_video(video_path, save_path):
     i=0
-    save_dir = str(Path(save_path).parent/"frames")
-    
-    os.makedirs(save_dir)
+    save_dir = str(Path(save_path).parent/"test_A")
+    video=cv2.VideoCapture(video_path)
+    os.makedirs(save_dir,exist_ok=True)
     while video.isOpened():
         success, img = video.read()
         if success:
@@ -30,8 +31,8 @@ def save_frames_from_video(video_path, save_path):
             break
     return save_dir
 
-def convert_skeleton_to_target(video_path, save_path)
-    video = cv2.VideoCapture(video_path))
+def convert_skeleton_to_target(video_path, save_path, first_frame):
+    video = cv2.VideoCapture(video_path)
     save_dir = save_frames_from_video(video_path, save_path)
     opt = TestOptions().parse(save=False)
     opt.nThreads = 1   # test code only supports nThreads = 1
@@ -39,7 +40,10 @@ def convert_skeleton_to_target(video_path, save_path)
     opt.serial_batches = True  # no shuffle
     opt.no_flip = True  # no flip
     opt.name = "everybody_dance_now_temporal"
-    opt.dataroot = skeleton_video_path
+    opt.dataroot = str(Path(save_path).parent)
+    os.makedirs(str(Path(save_path).parent/"test_B"), exist_ok=True)
+    frame_save_path=str(Path(save_path).parent/f"test_B/{sorted([f for f in os.listdir(save_dir) if not f.startswith('.')])[0]}")
+    cv2.imwrite(frame_save_path,first_frame)
     fps = video.get(cv2.CAP_PROP_FPS)
     dataset = CreateDataset(opt)
 
@@ -61,23 +65,20 @@ def convert_skeleton_to_target(video_path, save_path)
         generated = []
 
     from skimage.io import imsave
-    frames_path = str(Path(output_path).parent)
-    os.makedirs(frames_path, exists_ok=True)
+    frames_path = str(Path(save_path).parent)
+    os.makedirs(frames_path, exist_ok=True)
     for i in tqdm(range(start_from, dataset.clip_length)):
         label = data['label'][i:i+1]
         inst = None if opt.no_instance else data['inst'][i:i+1]
 
         cur_frame = model.inference(label, inst, torch.unsqueeze(prev_frame, dim=0))
         prev_frame = cur_frame.data[0]
-        
-        imsave(f'{frames_path}/{:05d}.png'.format(i), util.tensor2im(prev_frame))
+        imsave(f'{frames_path}/{i:05d}.png', util.tensor2im(prev_frame))
         generated.append(util.tensor2im(prev_frame))
 
-    result_dir = os.path.join(opt.results_dir, opt.name, opt.which_epoch)
-    if not os.path.isdir(result_dir):
-    os.makedirs(result_dir, exist_ok=True)
+   
 
-    with get_writer(, fps=fps) as writer:
-    for im in generated:
-        writer.append_data(im)
-    writer.close()
+    with get_writer(save_path, fps=fps) as writer:
+        for im in generated:
+            writer.append_data(im)
+    #writer.close()

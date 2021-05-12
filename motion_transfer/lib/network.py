@@ -173,7 +173,7 @@ class Autoencoder3f(nn.Module):
         self.n_joints = config.decoder.channels[-1] // 3
         self.body_reference = config.body_reference
 
-        if config.source_type == "video":
+        if config.target_type == "video":
             body_encoder = config.body_encoder
         else:
             body_encoder = config.body_encoder_image

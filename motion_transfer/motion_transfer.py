@@ -49,7 +49,7 @@ def transfer_motion_to_target(source_video_keypoints, target_video_keypoints,
     cudnn.benchmark = True
 
     ae = get_autoencoder(config)
-    checkpoint = "checkpoints/autoencoder.pt" if config.autoencoder.source_type == "video" else "checkpoints/autoencoder_image.pt"
+    checkpoint = "checkpoints/autoencoder.pt" if config.autoencoder.target_type == "video" else "checkpoints/autoencoder_image.pt"
     ae.load_state_dict(torch.load(checkpoint))
     ae.cuda()
     ae.eval()
@@ -63,7 +63,7 @@ def transfer_motion_to_target(source_video_keypoints, target_video_keypoints,
     x_tgt = target_video_keypoints
     
     
-    length = min(x_src.shape[-1], x_tgt.shape[-1]) if config.autoencoder.source_type == "video" else 448
+    length = min(x_src.shape[-1], x_tgt.shape[-1]) if config.autoencoder.target_type == "video" else 448
     length = 8 * (length // 8)
     x_src = x_src[:, :, :length]
     x_tgt = x_tgt[:, :, :length]
@@ -72,9 +72,9 @@ def transfer_motion_to_target(source_video_keypoints, target_video_keypoints,
     x_tgt, _ = preprocess_test(x_tgt, mean_pose, std_pose, tgt_scale)
 
     x_src = torch.from_numpy(x_src.reshape((1, -1, length))).float().cuda()
-    x_tgt = torch.from_numpy(x_tgt.reshape((1, -1, length))).float().cuda() if config.autoencoder.source_type == "video" else torch.from_numpy(x_tgt.reshape((1, -1, x_tgt.shape[-1]))).float().cuda()
+    x_tgt = torch.from_numpy(x_tgt.reshape((1, -1, length))).float().cuda() if config.autoencoder.target_type == "video" else torch.from_numpy(x_tgt.reshape((1, -1, x_tgt.shape[-1]))).float().cuda()
 
-    if config.autoencoder.source_type == "video":
+    if config.autoencoder.target_type == "video":
         i = 0
         length=min(length, max_length)
         x_cross = None
