@@ -13,8 +13,8 @@ class BaseDataset(data.Dataset):
     def name(self):
         return 'BaseDataset'
 
-    def initialize(self, opt):
-        pass
+    # def initialize(self, opt):
+    #     pass
 
 def get_params(opt, size):
     w, h = size

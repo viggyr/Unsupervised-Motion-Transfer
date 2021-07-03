@@ -15,7 +15,7 @@ import torch
 
 
 class AlignedPairDataset(BaseDataset):
-    def initialize(self, opt):
+    def __init__(self, opt):
         self.opt = opt
         self.root = opt.dataroot    
 
@@ -48,7 +48,7 @@ class AlignedPairDataset(BaseDataset):
             self.clip_length = 2
         else:
             self.clip_length = min(opt.clip_length, len(self.A_paths))
-        print(len(self.A_paths), self.clip_length)
+        #print(len(self.A_paths), self.clip_length)
 
     def __getitem__(self, index):        
         ### input A (label maps)

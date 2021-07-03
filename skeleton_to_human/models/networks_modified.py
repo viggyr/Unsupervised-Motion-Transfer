@@ -32,7 +32,7 @@ def get_norm_layer(norm_type='instance'):
 
 # TODO: 20180929: Generator Input contains two images...
 def define_G(input_nc, output_nc, ngf, netG, n_downsample_global=3, n_blocks_global=9, n_local_enhancers=1, 
-             n_blocks_local=3, norm='instance', gpu_ids=[]):    
+             n_blocks_local=3, norm='instance'):    
     norm_layer = get_norm_layer(norm_type=norm)     
     if netG == 'global':    
         netG = GlobalGenerator(input_nc, output_nc, ngf, n_downsample_global, n_blocks_global, norm_layer)       
@@ -44,21 +44,21 @@ def define_G(input_nc, output_nc, ngf, netG, n_downsample_global=3, n_blocks_glo
     else:
         raise('generator not implemented!')
     print(netG)
-    if len(gpu_ids) > 0:
-        assert(torch.cuda.is_available())   
-        netG.cuda(gpu_ids[0])
+    # if len(gpu_ids) > 0:
+    #     assert(torch.cuda.is_available())   
+    #     netG.cuda(gpu_ids[0])
     netG.apply(weights_init)
     return netG
 
 
 # TODO: 20180929: Discriminator Input contains two pairs...
-def define_D(input_nc, ndf, n_layers_D, norm='instance', use_sigmoid=False, num_D=1, getIntermFeat=False, gpu_ids=[]):        
+def define_D(input_nc, ndf, n_layers_D, norm='instance', use_sigmoid=False, num_D=1, getIntermFeat=False):        
     norm_layer = get_norm_layer(norm_type=norm)   
     netD = MultiscaleDiscriminator(input_nc, ndf, n_layers_D, norm_layer, use_sigmoid, num_D, getIntermFeat)   
     print(netD)
-    if len(gpu_ids) > 0:
-        assert(torch.cuda.is_available())
-        netD.cuda(gpu_ids[0])
+    # if len(gpu_ids) > 0:
+    #     assert(torch.cuda.is_available())
+    #     netD.cuda(gpu_ids[0])
     netD.apply(weights_init)
     return netD
 
@@ -120,7 +120,7 @@ class GANLoss(nn.Module):
 
 
 class VGGLoss(nn.Module):
-    def __init__(self, gpu_ids):
+    def __init__(self):
         super(VGGLoss, self).__init__()        
         self.vgg = Vgg19().cuda()
         self.criterion = nn.L1Loss()
@@ -149,7 +149,7 @@ def flow2im(flow):
     return bgr 
     
 class FlowLoss(nn.Module):
-    def __init__(self, gpu_ids):
+    def __init__(self):
         super(FlowLoss, self).__init__()
         self.flownet = SpyNetwork().cuda()
         self.criterion = nn.L1Loss()
