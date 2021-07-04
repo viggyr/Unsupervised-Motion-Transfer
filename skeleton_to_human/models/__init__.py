@@ -1,0 +1,1 @@
+from .pose2vidHD_model import Pose2VidHDModel

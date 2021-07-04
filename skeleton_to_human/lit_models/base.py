@@ -2,7 +2,7 @@ import argparse
 from skeleton_to_human.data.image_folder import default_loader
 import pytorch_lightning as pl
 import torch
-
+from skeleton_to_human.models import networks
 
 OPTIMIZER = "Adam"
 LR = 2e-4
@@ -58,14 +58,11 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
         self.val_acc = Accuracy()
         self.test_acc = Accuracy()
         # define loss functions
-        self.loss_filter = self.init_loss_filter(not opt.no_ganFeat_loss, not opt.no_vgg_loss, not opt.no_flow_loss)
+        #self.loss_filter = self.init_loss_filter(not opt.no_ganFeat_loss, not opt.no_vgg_loss, not opt.no_flow_loss)
         
-        self.criterionGAN = networks.GANLoss(use_lsgan=not opt.no_lsgan, tensor=self.Tensor)   
-        self.criterionFeat = torch.nn.L1Loss()
-        if not self.no_vgg_loss:             
-            self.criterionVGG = networks.VGGLoss(self.gpu_ids)
+        
         # Names so we can breakout loss
-        self.loss_names = self.loss_filter('G_GAN', 'G_GAN_Feat', 'G_VGG', 'G_flow', 'D_real', 'D_fake')
+        #self.loss_names = self.loss_filter('G_GAN', 'G_GAN_Feat', 'G_VGG', 'G_flow', 'D_real', 'D_fake')
 
     @staticmethod
     def add_to_argparse(parser):
@@ -122,10 +119,10 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
             params_dict = dict(self.netG.named_parameters())
             params = []
             for key, value in params_dict.items():       
-                if key.startswith('model' + str(opt.n_local_enhancers)):                    
+                if key.startswith('model' + str(self.args.n_local_enhancers)):                    
                     params += [value]
                     finetune_list.add(key.split('.')[0])  
-            print('------------- Only training the local enhancer network (for %d epochs) ------------' % opt.niter_fix_global)
+            print('------------- Only training the local enhancer network (for %d epochs) ------------' % self.args.niter_fix_global)
             print('The layers that are finetuned are ', sorted(finetune_list))                         
         else:
             params = list(self.netG.parameters())

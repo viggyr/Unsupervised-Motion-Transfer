@@ -5,7 +5,7 @@ import torch
 import os
 from torch.autograd import Variable
 from .base_model import BaseModel
-# from . import networks
+# from .net import networks
 from . import networks_modified as networks
 
 
@@ -19,12 +19,13 @@ class Pose2VidHDModel(torch.nn.Module):
         return 'Pose2VidHDModel'
     
     def __init__(self, opt):
+        super().__init__()
         #BaseModel.initialize(self, opt)
         self.opt = opt
         #self.gpu_ids = opt.gpu_ids
         #self.isTrain = opt.isTrain
         self.Tensor = torch.cuda.FloatTensor if opt.gpus else torch.Tensor
-        self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
+        #self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
         if opt.resize_or_crop != 'none': # when training at full res this causes OOM
             torch.backends.cudnn.benchmark = True
         # self.use_features = opt.instance_feat or opt.label_feat
@@ -51,8 +52,7 @@ class Pose2VidHDModel(torch.nn.Module):
         # if self.gen_features:          
         #     self.netE = networks.define_G(opt.output_nc, opt.feat_num, opt.nef, 'encoder', 
         #                                   opt.n_downsample_E, norm=opt.norm, gpu_ids=self.gpu_ids)  
-        if self.opt.verbose:
-            print('---------- Networks initialized -------------')
+        
 
         # Todo: continue training from checkpoint.
         # if opt.continue_train or opt.load_pretrain:
@@ -196,8 +196,7 @@ class Pose2VidHDModel(torch.nn.Module):
         if self.gen_features:
             params += list(self.netE.parameters())           
         self.optimizer_G = torch.optim.Adam(params, lr=self.opt.lr, betas=(self.opt.beta1, 0.999))
-        if self.opt.verbose:
-            print('------------ Now also finetuning global generator -----------')
+       
 
     def update_learning_rate(self):
         lrd = self.opt.lr / self.opt.niter_decay
@@ -219,7 +218,7 @@ class Pose2VidHDModel(torch.nn.Module):
         parser.add_argument('--loadSize', type=int, default=1024, help='scale images to this size')
         parser.add_argument('--fineSize', type=int, default=512, help='then crop to this size')
         parser.add_argument('--label_nc', type=int, default=0, help='# of input label channels')
-        
+        parser.add_argument('--norm', type=str, default='instance', help='instance normalization or batch normalization')
 
          # for generator
         parser.add_argument('--netG', type=str, default='local', help='selects model to use for netG')
@@ -229,6 +228,8 @@ class Pose2VidHDModel(torch.nn.Module):
         parser.add_argument('--n_blocks_local', type=int, default=3, help='number of residual blocks in the local enhancer network')
         parser.add_argument('--n_local_enhancers', type=int, default=1, help='number of local enhancers to use')        
         parser.add_argument('--niter_fix_global', type=int, default=0, help='number of epochs that we only train the outmost local enhancer')        
+
+        parser.add_argument('--resize_or_crop', type=str, default='none', help='scaling and cropping of images at load time [resize_and_crop|crop|scale_width|scale_width_and_crop]')
 
 
 class InferenceModel(Pose2VidHDModel):

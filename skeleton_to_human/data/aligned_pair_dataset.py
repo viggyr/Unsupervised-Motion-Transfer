@@ -15,10 +15,10 @@ import torch
 
 
 class AlignedPairDataset(BaseDataset):
-    def __init__(self, opt):
+    def __init__(self, opt, is_train:bool=False):
         self.opt = opt
         self.root = opt.dataroot    
-
+        self.is_train = is_train
         ### input A (label maps)
         dir_A = '_A' if self.opt.label_nc == 0 else '_label'
         self.dir_A = os.path.join(opt.dataroot, opt.phase + dir_A)
@@ -43,8 +43,7 @@ class AlignedPairDataset(BaseDataset):
 
         self.dataset_size = len(self.A_paths)
 
-        ### define clip length
-        if opt.isTrain:
+        if is_train:
             self.clip_length = 2
         else:
             self.clip_length = min(opt.clip_length, len(self.A_paths))
@@ -68,7 +67,7 @@ class AlignedPairDataset(BaseDataset):
 
         B_tensor = inst_tensor = feat_tensor = 0
         ### input B (real images)
-        if self.opt.isTrain:
+        if self.is_train:
             B_path = self.B_paths[index: index + self.clip_length]
             B = [Image.open(path).convert('RGB') for path in B_path]
             transform_B = get_transform(self.opt, params)      
