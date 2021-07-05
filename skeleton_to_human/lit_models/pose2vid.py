@@ -44,8 +44,8 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
 
         # TODO: 20180929: Generator Input contains two images...
         netD_input_nc *= 2  # two pairs of pose/frame
-        self.netD = networks.define_D(netD_input_nc, args.get("ndf"), args.get("n_layers_D"), args.get("norm"), use_sigmoid, 
-                                        args.get("num_D"), not args.get("no_ganFeat_loss"))
+        self.netD = networks.define_D(netD_input_nc, self.args.get("ndf"), args.get("n_layers_D"), self.args.get("norm"), use_sigmoid, 
+                                        self.args.get("num_D"), not self.args.get("no_ganFeat_loss"))
             
         #Todo: Visualization.
         #Todo: Setup test and validation metrics and functions.
