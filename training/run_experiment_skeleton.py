@@ -7,7 +7,7 @@ import torch
 import pytorch_lightning as pl
 import wandb
 
-from text_recognizer import lit_models
+from skeleton_to_human import lit_models
 
 
 # In order to ensure reproducible experiments, we must set random seeds.
@@ -36,14 +36,14 @@ def _setup_parser():
     # Hide lines below until Lab 5
     parser.add_argument("--wandb", action="store_true", default=False)
     # Hide lines above until Lab 5
-    parser.add_argument("--data_class", type=str, default="MNIST")
-    parser.add_argument("--model_class", type=str, default="MLP")
+    parser.add_argument("--data_class", type=str, default="Dancing")
+    parser.add_argument("--model_class", type=str, default="Pose2VidHDModel")
     parser.add_argument("--load_checkpoint", type=str, default=None)
 
     # Get the data and model classes, so that we can add their specific arguments
     temp_args, _ = parser.parse_known_args()
-    data_class = _import_class(f"text_recognizer.data.{temp_args.data_class}")
-    model_class = _import_class(f"text_recognizer.models.{temp_args.model_class}")
+    data_class = _import_class(f"skeleton_to_human.data.{temp_args.data_class}")
+    model_class = _import_class(f"skeleton_to_human.models.{temp_args.model_class}")
 
     # Get data, model, and LitModel specific arguments
     data_group = parser.add_argument_group("Data Args")
@@ -72,7 +72,7 @@ def main():
     data_class = _import_class(f"skeleton_to_human.data.{args.data_class}")
     model_class = _import_class(f"skeleton_to_human.models.{args.model_class}")
     data = data_class(args)
-    model = model_class(data_config=data.config(), args=args)
+    model = model_class(args)
 
     lit_model_class = lit_models.Pose2Vid
 
@@ -91,7 +91,7 @@ def main():
 
     early_stopping_callback = pl.callbacks.EarlyStopping(monitor="val_loss", mode="min", patience=10)
     model_checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        filename="{epoch:03d}-{val_loss:.3f}-{val_cer:.3f}", monitor="Generator Loss", mode="min"
+        filename="{epoch:03d}-{train_generator_loss:.3f}-{val_cer:.3f}", monitor="train_generator_loss", mode="min"
     )
     # Todo: Early stopping.
     callbacks = [model_checkpoint_callback]
@@ -103,7 +103,7 @@ def main():
     trainer.tune(lit_model, datamodule=data)  # If passing --auto_lr_find, this will set learning rate
 
     trainer.fit(lit_model, datamodule=data)
-    trainer.test(lit_model, datamodule=data)
+    #trainer.test(lit_model, datamodule=data)
     # pylint: enable=no-member
 
     # Hide lines below until Lab 5
