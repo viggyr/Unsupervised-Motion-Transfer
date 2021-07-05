@@ -73,6 +73,8 @@ class BaseDataModule(pl.LightningDataModule):
             "--num_workers", type=int, default=NUM_WORKERS, help="Number of additional processes to load data."
         )
         parser.add_argument('--no_instance', action='store_true', help='if specified, do *not* add instance map as input')        
+        parser.add_argument('--dataroot', type=str, default='./data/spiderman') 
+
         return parser
 
 
