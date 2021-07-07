@@ -15,7 +15,7 @@ import torch
 
 
 class AlignedPairDataset(BaseDataset):
-    def __init__(self, opt, is_train:bool=False):
+    def __init__(self, opt, is_train:bool=True):
         self.opt = opt
         self.root = opt.dataroot    
         self.is_train = is_train

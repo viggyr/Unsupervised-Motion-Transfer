@@ -90,11 +90,11 @@ class Pose2VidHDModel(torch.nn.Module):
         if real_image is not None:
             real_image = Variable(real_image.data.cuda())
 
-        # instance map for feature encoding
-        if self.use_features:
-            # get precomputed feature maps
-            if self.opt.load_features:
-                feat_map = Variable(feat_map.data.cuda())
+        # # instance map for feature encoding
+        # if self.use_features:
+        #     # get precomputed feature maps
+        #     if self.opt.load_features:
+        #         feat_map = Variable(feat_map.data.cuda())
 
         return input_label, inst_map, real_image, feat_map
 
