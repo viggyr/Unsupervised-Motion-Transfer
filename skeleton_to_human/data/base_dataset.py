@@ -32,7 +32,7 @@ def get_params(opt, size):
     flip = random.random() > 0.5
     return {'crop_pos': (x, y), 'flip': flip}
 
-def get_transform(opt, params, method=Image.BICUBIC, normalize=True):
+def get_transform(opt, params, method=Image.BICUBIC, normalize=True, is_train=True):
     transform_list = []
     if 'resize' in opt.resize_or_crop:
         osize = [opt.loadSize, opt.loadSize]
@@ -49,7 +49,7 @@ def get_transform(opt, params, method=Image.BICUBIC, normalize=True):
             base *= (2 ** opt.n_local_enhancers)
         transform_list.append(transforms.Lambda(lambda img: __make_power_2(img, base, method)))
 
-    if opt.isTrain and not opt.no_flip:
+    if is_train and not opt.no_flip:
         transform_list.append(transforms.Lambda(lambda img: __flip(img, params['flip'])))
 
     transform_list += [transforms.ToTensor()]
