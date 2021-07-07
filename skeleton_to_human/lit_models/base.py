@@ -102,7 +102,6 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
         parser.add_argument('--ndf', type=int, default=64, help='# of discrim filters in first conv layer')    
         parser.add_argument('--lambda_feat', type=float, default=10.0, help='weight for feature matching loss')
         parser.add_argument('--lambda_flow', type=float, default=1, help='weight for flow matching loss')
-        parser.add_argument('--n_local_enhancers', type=int, default=1, help='number of local enhancers to use') 
         return parser
 
     def configure_optimizers(self):
