@@ -21,6 +21,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
 
     def __init__(self, model,  args: argparse.Namespace = None):
         super().__init__(model, args)
+        self.opt = args
         self.no_vgg_loss=self.args.get("no_vgg_loss", False)
         self.no_flow_loss=self.args.get("no_flow_loss", False)
         self.no_gan_feat_loss=self.args.get("no_ganFeat_loss", False)
