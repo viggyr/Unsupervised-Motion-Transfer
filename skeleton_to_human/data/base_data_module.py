@@ -74,7 +74,7 @@ class BaseDataModule(pl.LightningDataModule):
         )
         parser.add_argument('--no_instance', action='store_true', help='if specified, do *not* add instance map as input')        
         parser.add_argument('--dataroot', type=str, default='./data/spiderman') 
-
+        parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
         return parser
 
 
