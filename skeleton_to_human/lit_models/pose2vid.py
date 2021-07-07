@@ -76,7 +76,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             # GAN feature matching loss
             loss_G_GAN_Feat = 0
             if not self.no_gan_feat_loss:
-                feat_weights = 4.0 / (self.opt.n_layers_D + 1)
+                feat_weights = 4.0 / (self.args.get("n_layers_D",3) + 1)
                 D_weights = 1.0 / self.opt.num_D
                 for i in range(self.opt.num_D):
                     for j in range(len(pred_fake[i])-1):
