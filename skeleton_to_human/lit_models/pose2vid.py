@@ -39,7 +39,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         # Discriminator network
         use_sigmoid = self.args.get("no_lsgan", False)
         netD_input_nc = self.args.get("input_nc",3) + self.args.get("output_nc",3)
-        if not args.get("no_instance",True):
+        if not self.args.get("no_instance",True):
             netD_input_nc += 1
 
         # TODO: 20180929: Generator Input contains two images...
