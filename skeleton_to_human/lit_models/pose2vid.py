@@ -38,13 +38,13 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         
         # Discriminator network
         use_sigmoid = self.args.get("no_lsgan", False)
-        netD_input_nc = args.get("input_nc",3) + args.get("output_nc",3)
+        netD_input_nc = self.args.get("input_nc",3) + self.args.get("output_nc",3)
         if not args.get("no_instance",True):
             netD_input_nc += 1
 
         # TODO: 20180929: Generator Input contains two images...
         netD_input_nc *= 2  # two pairs of pose/frame
-        self.netD = networks.define_D(netD_input_nc, self.args.get("ndf"), args.get("n_layers_D"), self.args.get("norm"), use_sigmoid, 
+        self.netD = networks.define_D(netD_input_nc, self.args.get("ndf"), self.args.get("n_layers_D"), self.args.get("norm"), use_sigmoid, 
                                         self.args.get("num_D"), not self.args.get("no_ganFeat_loss"))
             
         #Todo: Visualization.
