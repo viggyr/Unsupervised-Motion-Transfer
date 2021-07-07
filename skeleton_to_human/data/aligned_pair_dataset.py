@@ -35,11 +35,11 @@ class AlignedPairDataset(BaseDataset):
             self.dir_inst = os.path.join(opt.dataroot, opt.phase + '_inst')
             self.inst_paths = sorted(make_dataset(self.dir_inst))
 
-        ### load precomputed instance-wise encoded features
-        if opt.load_features:                              
-            self.dir_feat = os.path.join(opt.dataroot, opt.phase + '_feat')
-            print('----------- loading features from %s ----------' % self.dir_feat)
-            self.feat_paths = sorted(make_dataset(self.dir_feat))
+        # ### load precomputed instance-wise encoded features
+        # if opt.load_features:                              
+        #     self.dir_feat = os.path.join(opt.dataroot, opt.phase + '_feat')
+        #     print('----------- loading features from %s ----------' % self.dir_feat)
+        #     self.feat_paths = sorted(make_dataset(self.dir_feat))
 
         self.dataset_size = len(self.A_paths)
 
@@ -86,12 +86,12 @@ class AlignedPairDataset(BaseDataset):
             inst_tensor = [transform_A(item) for item in inst]
             inst_tensor = torch.stack(inst_tensor, dim=0)
 
-            if self.opt.load_features:
-                feat_path = self.feat_paths[index: index + self.clip_length]
-                feat = [Image.open(path).convert('RGB') for path in feat_path]
-                norm = normalize()
-                feat_tensor = [norm(transform_A(item)) for item in feat]
-                feat_tensor = torch.stack(feat_tensor, dim=0)
+            # if self.opt.load_features:
+            #     feat_path = self.feat_paths[index: index + self.clip_length]
+            #     feat = [Image.open(path).convert('RGB') for path in feat_path]
+            #     norm = normalize()
+            #     feat_tensor = [norm(transform_A(item)) for item in feat]
+            #     feat_tensor = torch.stack(feat_tensor, dim=0)
 
         input_dict = {'label': A_tensor, 'inst': inst_tensor, 'image': B_tensor, 
                       'feat': feat_tensor, 'path': A_path}
