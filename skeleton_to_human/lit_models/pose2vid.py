@@ -23,6 +23,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         super().__init__(model, args)
         self.no_vgg_loss=self.args.get("no_vgg_loss", False)
         self.no_flow_loss=self.args.get("no_flow_loss", False)
+        self.no_gan_feat_loss=self.args.get("no_ganFeat_loss", False)
         self.no_lsgan = self.args.get("no_lsgan", False)
         self.dataroot = self.args.get("dataroot", './datasets/cityscapes/')
         self.criterionGAN = networks.GANLoss(use_lsgan=not self.no_lsgan, tensor=self.model.Tensor)   
@@ -74,7 +75,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
 
             # GAN feature matching loss
             loss_G_GAN_Feat = 0
-            if not self.no_ganFeat_loss:
+            if not self.no_gan_feat_loss:
                 feat_weights = 4.0 / (self.opt.n_layers_D + 1)
                 D_weights = 1.0 / self.opt.num_D
                 for i in range(self.opt.num_D):
