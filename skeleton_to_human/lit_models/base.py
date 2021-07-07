@@ -122,7 +122,7 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
                 if key.startswith('model' + str(self.args.get("n_local_enhancers", 1))):                    
                     params += [value]
                     finetune_list.add(key.split('.')[0])  
-            print('------------- Only training the local enhancer network (for %d epochs) ------------' % self.args.niter_fix_global)
+            print('------------- Only training the local enhancer network (for %d epochs) ------------' % self.niter_fix_global)
             print('The layers that are finetuned are ', sorted(finetune_list))                         
         else:
             params = list(self.model.netG.parameters())
