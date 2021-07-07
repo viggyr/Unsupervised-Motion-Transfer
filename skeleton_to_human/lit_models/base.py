@@ -116,7 +116,7 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
                 from sets import Set
                 finetune_list = Set()
 
-            params_dict = dict(self.netG.named_parameters())
+            params_dict = dict(self.model.netG.named_parameters())
             params = []
             for key, value in params_dict.items():       
                 if key.startswith('model' + str(self.args.n_local_enhancers)):                    
@@ -125,7 +125,7 @@ class BaseLitModel(pl.LightningModule):  # pylint: disable=too-many-ancestors
             print('------------- Only training the local enhancer network (for %d epochs) ------------' % self.args.niter_fix_global)
             print('The layers that are finetuned are ', sorted(finetune_list))                         
         else:
-            params = list(self.netG.parameters())
+            params = list(self.model.netG.parameters())
         # if self.gen_features:              
         #     params += list(self.netE.parameters())         
         self.optimizer_G = torch.optim.Adam(params, lr=self.lr, betas=(self.beta1, 0.999))                            
