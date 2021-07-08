@@ -1,6 +1,7 @@
 from skeleton_to_human import models, options
 import torch.nn as nn
 import torch
+import torchvision
 from ..models import networks_modified as networks
 import argparse
 try:
@@ -69,6 +70,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         losses=[]
         # Real Detection and Loss        
         pred_real = self.netD.forward(torch.cat((x1, x2, gt1.detach(), gt2.detach()), dim=1))
+        # Todo: Check zero grad and detaching dis when training gen
         if optimizer_idx==0:
             # GAN loss (Fake Possibility Loss)
             pred_fake = self.netD.forward(torch.cat((x1, x2, y1, y2), dim=1))
@@ -98,7 +100,11 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             losses.append(loss_G_flow)
             losses = [torch.mean(x) if not isinstance(x, int) else x for x in losses]
             #20180930: Always return fake_B now, let super function decide whether to save it  
-            self.log('train_generator_loss', sum(losses))            
+            self.log('train_generator_loss', sum(losses))      
+            # log sampled images
+            sample_imgs = [x1, y1, gt1]
+            grid = torchvision.utils.make_grid(sample_imgs)
+            self.logger.experiment.add_image('generated_images', grid, 0)      
             return sum(losses)
         else:
             # Fake Detection and Loss
