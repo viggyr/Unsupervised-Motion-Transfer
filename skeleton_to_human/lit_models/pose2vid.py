@@ -101,6 +101,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             losses = [torch.mean(x) if not isinstance(x, int) else x for x in losses]
             #20180930: Always return fake_B now, let super function decide whether to save it  
             self.log('train_generator_loss', sum(losses))      
+            print(x1.shape, y1.shape, gt1.shape)
             # log sampled images
             sample_imgs = [x1, y1, gt1]
             grid = torchvision.utils.make_grid(sample_imgs)
