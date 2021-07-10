@@ -82,8 +82,7 @@ def find_video_keypoints(video_path: str):
             final_keypoints=frame_keypoints_transformed
     return final_keypoints
 
-def extract_sequence(source_video_path, target_video_path):
+def extract_sequence(source_video_path):
     source_keypoints=find_video_keypoints(source_video_path)
-    target_keypoints=find_video_keypoints(target_video_path)
-    return source_keypoints, target_keypoints
-
+    #target_keypoints=find_video_keypoints(target_video_path)
+    return source_keypoints

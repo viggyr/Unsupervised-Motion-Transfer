@@ -17,9 +17,9 @@ from tqdm import tqdm
 import cv2
 
 
-def save_frames_from_video(video_path, save_path):
+def save_frames_from_video(video_path, save_path, folder_name="test_A"):
     i=0
-    save_dir = str(Path(save_path).parent/"test_A")
+    save_dir = str(Path(save_path).parent/folder_name)
     video=cv2.VideoCapture(video_path)
     os.makedirs(save_dir,exist_ok=True)
     while video.isOpened():
