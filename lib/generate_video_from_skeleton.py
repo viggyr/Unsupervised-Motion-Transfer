@@ -10,6 +10,7 @@ from skeleton_to_human.options.test_options import TestOptions
 from skeleton_to_human.data.custom_dataset_data_loader import CreateDataset
 from skeleton_to_human.models.models import create_model
 import skeleton_to_human.util.util as util
+from lib.detect_keypoints import frame_from_video
 import torch
 from imageio import get_writer
 import numpy as np
@@ -22,13 +23,13 @@ def save_frames_from_video(video_path, save_path, folder_name="test_A"):
     save_dir = str(Path(save_path).parent/folder_name)
     video=cv2.VideoCapture(video_path)
     os.makedirs(save_dir,exist_ok=True)
-    while video.isOpened():
-        success, img = video.read()
-        if success:
-            cv2.imwrite(f"{save_dir}/{i:05d}.png",img)
-            i+=1
-        else:
-            break
+    for img in frame_from_video(video):
+        #success, img = video.read()
+        #if success:
+        cv2.imwrite(f"{save_dir}/{i:05d}.png",img)
+        i+=1
+        #else:
+        #    break
     return save_dir
 
 def convert_skeleton_to_target(video_path, save_path, first_frame):
