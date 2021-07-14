@@ -7,6 +7,6 @@ def generate_skeleton_video(motion_data, height, width, save_path):
     motion2video(motion_data, height, width, save_path, color, bg_color=(0,0,0), save_frame=True, fps=50)
 
 
-def transfer_motion_and_generate_video(source_keypoints, save_dir):
-    #transferred_motion = transfer_motion_to_target(source_keypoints, target_keypoints, 512, 512, 512, 512)
-    generate_skeleton_video(source_keypoints,512, 512, save_dir)
+def transfer_motion_and_generate_video(source_keypoints, target_keypoints, save_dir):
+    transferred_motion = transfer_motion_to_target(source_keypoints, target_keypoints, 512, 512, 512, 512)
+    generate_skeleton_video(transferred_motion,512, 512, save_dir)
