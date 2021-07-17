@@ -21,9 +21,9 @@ def main():
 
 def retarget(source_path: str, target_path: str, output_video_path: str):
     #save_frames_from_video(source_path, output_video_path, "train_B")
-    source_keypoints = extract_sequence(source_path)
+    #source_keypoints = extract_sequence(source_path)
     target_keypoints = extract_sequence(target_path)
-    #source_keypoints = np.load("inputs/source.npy")
+    source_keypoints = np.load("inputs/source.npy")
     #target_keypoints = np.load("inputs/target.npy")
     print("Extracted keypoints.")
     transfer_motion_and_generate_video(source_keypoints, target_keypoints, "outputs/skeleton.mp4")

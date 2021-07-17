@@ -8,7 +8,8 @@ from collections import OrderedDict
 from pathlib import Path
 from skeleton_to_human.options.test_options import TestOptions
 from skeleton_to_human.data.custom_dataset_data_loader import CreateDataset
-from skeleton_to_human.models.models import create_model
+from skeleton_to_human.lit_models import Pose2Vid
+from skeleton_to_human.models import Pose2VidHDModel
 import skeleton_to_human.util.util as util
 from lib.detect_keypoints import frame_from_video
 import torch
@@ -49,9 +50,12 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     dataset = CreateDataset(opt)
 
     # test
-    model = create_model(opt)
-    if opt.verbose:
-        print(model)
+    #model = create_model(opt)
+    model = Pose2VidHDModel(opt)
+    lit_model = Pose2Vid(".checkpoint/model.pt",args=opt, model=model)
+    lit_model.eval()
+    scripted_model = lit_model.to_torchscript(method="script", file_path=None)
+   
 
     data = dataset[0]
     if opt.use_first_frame:
@@ -72,7 +76,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
         label = data['label'][i:i+1]
         inst = None if opt.no_instance else data['inst'][i:i+1]
 
-        cur_frame = model.inference(label, inst, torch.unsqueeze(prev_frame, dim=0))
+        cur_frame = scripted_model(label, inst, torch.unsqueeze(prev_frame, dim=0))
         prev_frame = cur_frame.data[0]
         imsave(f'{frames_path}/{i:05d}.png', util.tensor2im(prev_frame))
         generated.append(util.tensor2im(prev_frame))
