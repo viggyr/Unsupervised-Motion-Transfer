@@ -5,10 +5,10 @@ from .base_data_loader import BaseDataLoader
 def CreateDataset(opt):
     dataset = None
     from .aligned_pair_dataset import AlignedPairDataset
-    dataset = AlignedPairDataset()
+    dataset = AlignedPairDataset(opt)
 
     print("dataset [%s] was created" % (dataset.name()))
-    dataset.initialize(opt)
+    #dataset.initialize(opt)
     return dataset
 
 class CustomDatasetDataLoader(BaseDataLoader):
