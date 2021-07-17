@@ -20,7 +20,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
     The module must take x, y as inputs, and have a special predict() method.
     """
 
-    def __init__(self, model,  args: argparse.Namespace = None):
+    def __init__(self, model,  args: argparse.Namespace = None, is_train: bool = True):
         super().__init__(model, args)
         self.opt = args
         self.no_vgg_loss=self.args.get("no_vgg_loss", True)
@@ -47,7 +47,8 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
 
         # TODO: 20180929: Generator Input contains two images...
         netD_input_nc *= 2  # two pairs of pose/frame
-        self.netD = networks.define_D(netD_input_nc, self.args.get("ndf"), self.args.get("n_layers_D"), self.args.get("norm"), use_sigmoid, 
+        if is_train:
+            self.netD = networks.define_D(netD_input_nc, self.args.get("ndf"), self.args.get("n_layers_D"), self.args.get("norm"), use_sigmoid, 
                                         self.args.get("num_D"), not self.args.get("no_ganFeat_loss"))
             
         #Todo: Visualization.
