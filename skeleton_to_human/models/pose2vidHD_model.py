@@ -110,13 +110,13 @@ class Pose2VidHDModel(torch.nn.Module):
         input_label, inst_map, _, _ = self.encode_input(Variable(label), Variable(inst), infer=True)
         prev_frame = Variable(prev_frame.data.cuda())
 
-        # Fake Generation
-        if self.use_features:       
-            # sample clusters from precomputed features             
-            feat_map = self.sample_features(inst_map)
-            input_concat = torch.cat((input_label, feat_map), dim=1)                        
-        else:
-            input_concat = input_label
+        # # Fake Generation
+        # if self.use_features:       
+        #     # sample clusters from precomputed features             
+        #     feat_map = self.sample_features(inst_map)
+        #     input_concat = torch.cat((input_label, feat_map), dim=1)                        
+        # else:
+        input_concat = input_label
 
         input_concat = torch.cat((input_concat, prev_frame), dim=1)
 
