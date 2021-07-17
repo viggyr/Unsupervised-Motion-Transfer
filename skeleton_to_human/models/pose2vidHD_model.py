@@ -108,7 +108,7 @@ class Pose2VidHDModel(torch.nn.Module):
     def predict(self, label, inst, prev_frame):
         # Encode Inputs        
         input_label, inst_map, _, _ = self.encode_input(Variable(label), Variable(inst), infer=True)
-        if opt.gpus:
+        if self.opt.gpus:
             prev_frame = Variable(prev_frame.data.cuda())
 
         # # Fake Generation
