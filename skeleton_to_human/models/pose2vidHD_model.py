@@ -7,7 +7,6 @@ from torch.autograd import Variable
 from .base_model import BaseModel
 # from .net import networks
 from . import networks_modified as networks
-≈
 
 # TODO: modify upon pix2pixHDModel, adding last-frame reference
 #   TODO: generator, input two images now
