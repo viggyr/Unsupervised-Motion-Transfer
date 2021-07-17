@@ -68,16 +68,16 @@ class BaseOptions():
         self.opt = self.parser.parse_args()
         self.opt.isTrain = self.isTrain   # train or test
 
-        str_ids = self.opt.gpu_ids.split(',')
-        self.opt.gpu_ids = []
+        str_ids = self.opt.gpus.split(',')
+        self.opt.gpus = []
         for str_id in str_ids:
             id = int(str_id)
             if id >= 0:
                 self.opt.gpu_ids.append(id)
         
-        # set gpu ids
-        if len(self.opt.gpu_ids) > 0:
-            torch.cuda.set_device(self.opt.gpu_ids[0])
+        # # set gpu ids
+        # if len(self.opt.gpu_ids) > 0:
+        #     torch.cuda.set_device(self.opt.gpu_ids[0])
 
         args = vars(self.opt)
 
