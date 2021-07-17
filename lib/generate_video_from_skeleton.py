@@ -41,6 +41,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     opt.batchSize = 1  # test code only supports batchSize = 1
     opt.serial_batches = True  # no shuffle
     opt.no_flip = True  # no flip
+    opt.no_instance=True
     opt.name = "everybody_dance_now_temporal"
     opt.dataroot = str(Path(save_path).parent)
     os.makedirs(str(Path(save_path).parent/"test_B"), exist_ok=True)
