@@ -21,13 +21,13 @@ class BaseOptions():
         self.parser.add_argument('--data_type', default=32, type=int, choices=[8, 16, 32], help="Supported data type i.e. 8, 16, 32 bit")
         self.parser.add_argument('--verbose', action='store_true', default=False, help='toggles verbose')
 
-        # # input/output sizes       
-        # self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-        # self.parser.add_argument('--loadSize', type=int, default=1024, help='scale images to this size')
-        # self.parser.add_argument('--fineSize', type=int, default=512, help='then crop to this size')
-        # self.parser.add_argument('--label_nc', type=int, default=0, help='# of input label channels')
-        # self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
-        # self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
+        # input/output sizes       
+        self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
+        self.parser.add_argument('--loadSize', type=int, default=1024, help='scale images to this size')
+        self.parser.add_argument('--fineSize', type=int, default=512, help='then crop to this size')
+        self.parser.add_argument('--label_nc', type=int, default=0, help='# of input label channels')
+        self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
+        self.parser.add_argument('--output_nc', type=int, default=3, help='# of output image channels')
 
         # for setting inputs
         self.parser.add_argument('--dataroot', type=str, default='./datasets/cityscapes/') 
@@ -41,14 +41,14 @@ class BaseOptions():
         self.parser.add_argument('--display_winsize', type=int, default=512,  help='display window size')
         self.parser.add_argument('--tf_log', action='store_true', help='if specified, use tensorboard logging. Requires tensorflow installed')
 
-        # # for generator
-        # self.parser.add_argument('--netG', type=str, default='local', help='selects model to use for netG')
-        # self.parser.add_argument('--ngf', type=int, default=32, help='# of gen filters in first conv layer')
-        # self.parser.add_argument('--n_downsample_global', type=int, default=4, help='number of downsampling layers in netG')
-        # self.parser.add_argument('--n_blocks_global', type=int, default=9, help='number of residual blocks in the global generator network')
-        # self.parser.add_argument('--n_blocks_local', type=int, default=3, help='number of residual blocks in the local enhancer network')
-        # self.parser.add_argument('--n_local_enhancers', type=int, default=1, help='number of local enhancers to use')        
-        # self.parser.add_argument('--niter_fix_global', type=int, default=0, help='number of epochs that we only train the outmost local enhancer')        
+        # for generator
+        self.parser.add_argument('--netG', type=str, default='local', help='selects model to use for netG')
+        self.parser.add_argument('--ngf', type=int, default=32, help='# of gen filters in first conv layer')
+        self.parser.add_argument('--n_downsample_global', type=int, default=4, help='number of downsampling layers in netG')
+        self.parser.add_argument('--n_blocks_global', type=int, default=9, help='number of residual blocks in the global generator network')
+        self.parser.add_argument('--n_blocks_local', type=int, default=3, help='number of residual blocks in the local enhancer network')
+        self.parser.add_argument('--n_local_enhancers', type=int, default=1, help='number of local enhancers to use')        
+        self.parser.add_argument('--niter_fix_global', type=int, default=0, help='number of epochs that we only train the outmost local enhancer')        
 
         # for instance-wise features
         self.parser.add_argument('--no_instance', action='store_true', help='if specified, do *not* add instance map as input')        
