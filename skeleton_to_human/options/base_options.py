@@ -68,12 +68,12 @@ class BaseOptions():
         self.opt = self.parser.parse_args()
         self.opt.isTrain = self.isTrain   # train or test
 
-        str_ids = self.opt.gpus.split(',')
-        self.opt.gpus = []
-        for str_id in str_ids:
-            id = int(str_id)
-            if id >= 0:
-                self.opt.gpu_ids.append(id)
+        #str_ids = self.opt.gpus.split(',')
+        # self.opt.gpus = []
+        # for str_id in str_ids:
+        #     id = int(str_id)
+        #     if id >= 0:
+        #         self.opt.gpus.append(id)
         
         # # set gpu ids
         # if len(self.opt.gpu_ids) > 0:
