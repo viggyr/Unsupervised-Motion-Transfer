@@ -23,6 +23,7 @@ def retarget(source_path: str, target_path: str, output_video_path: str):
     #save_frames_from_video(source_path, output_video_path, "train_B")
     #source_keypoints = extract_sequence(source_path)
     target_keypoints = extract_sequence(target_path)
+    np.save("inputs/target.npy", target_keypoints)
     source_keypoints = np.load("inputs/source.npy")
     #target_keypoints = np.load("inputs/target.npy")
     print("Extracted keypoints.")
