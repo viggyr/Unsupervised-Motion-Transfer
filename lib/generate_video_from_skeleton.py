@@ -55,7 +55,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     model = Pose2VidHDModel(opt)
     lit_model = Pose2Vid.load_from_checkpoint(checkpoint_path="checkpoints/model.pt",args=opt, model=model, is_train=False, strict=False)
     lit_model.eval()
-    scripted_model = lit_model.to_torchscript(method="script", file_path=None)
+    #scripted_model = lit_model.to_torchscript(method="script", file_path=None)
    
 
     data = dataset[0]
@@ -77,7 +77,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
         label = data['label'][i:i+1]
         inst = None if opt.no_instance else data['inst'][i:i+1]
 
-        cur_frame = scripted_model(label, inst, torch.unsqueeze(prev_frame, dim=0))
+        cur_frame = lit_model(label, inst, torch.unsqueeze(prev_frame, dim=0))
         prev_frame = cur_frame.data[0]
         imsave(f'{frames_path}/{i:05d}.png', util.tensor2im(prev_frame))
         generated.append(util.tensor2im(prev_frame))
