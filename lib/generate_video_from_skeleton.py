@@ -12,6 +12,7 @@ from skeleton_to_human.lit_models import Pose2Vid
 from skeleton_to_human.models import Pose2VidHDModel
 import skeleton_to_human.util.util as util
 from lib.detect_keypoints import frame_from_video
+from skeleton_to_human.data.aligned_pair_dataset import AlignedPairDataset
 import torch
 from imageio import get_writer
 import numpy as np
@@ -48,7 +49,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     frame_save_path=str(Path(save_path).parent/f"test_B/{sorted([f for f in os.listdir(save_dir) if not f.startswith('.')])[0]}")
     cv2.imwrite(frame_save_path,first_frame)
     fps = video.get(cv2.CAP_PROP_FPS)
-    dataset = CreateDataset(opt)
+    dataset = AlignedPairDataset(opt)
 
     # test
     #model = create_model(opt)
@@ -73,6 +74,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     from skimage.io import imsave
     frames_path = str(Path(save_path).parent)
     os.makedirs(frames_path, exist_ok=True)
+    print(data['label'].shape)
     for i in tqdm(range(start_from, dataset.clip_length)):
         label = data['label'][i:i+1]
         inst = None if opt.no_instance else data['inst'][i:i+1]
