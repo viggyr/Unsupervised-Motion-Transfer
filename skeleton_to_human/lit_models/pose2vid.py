@@ -56,8 +56,8 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         #self.val_cer = CharacterErrorRate(ignore_tokens)
         #self.test_cer = CharacterErrorRate(ignore_tokens)
 
-    def forward(self, x):
-        return self.model.predict(x)
+    def forward(self, label, inst, prev_frame):
+        return self.model.predict(label, inst, prev_frame)
 
     def training_step(self, data, batch_idx, optimizer_idx):
         label = data['label'].data.cuda()
