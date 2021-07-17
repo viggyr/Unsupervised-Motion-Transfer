@@ -53,7 +53,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     # test
     #model = create_model(opt)
     model = Pose2VidHDModel(opt)
-    lit_model = Pose2Vid.load_from_checkpoint(checkpoint_path="checkpoints/model.pt",args=opt, model=model, is_train=False)
+    lit_model = Pose2Vid.load_from_checkpoint(checkpoint_path="checkpoints/model.pt",args=opt, model=model, is_train=False, strict=False)
     lit_model.eval()
     scripted_model = lit_model.to_torchscript(method="script", file_path=None)
    
