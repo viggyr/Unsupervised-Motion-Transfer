@@ -23,10 +23,10 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
     def __init__(self, model,  args: argparse.Namespace = None):
         super().__init__(model, args)
         self.opt = args
-        self.no_vgg_loss=self.args.get("no_vgg_loss", False)
-        self.no_flow_loss=self.args.get("no_flow_loss", False)
-        self.no_gan_feat_loss=self.args.get("no_ganFeat_loss", False)
-        self.no_lsgan = self.args.get("no_lsgan", False)
+        self.no_vgg_loss=self.args.get("no_vgg_loss", True)
+        self.no_flow_loss=self.args.get("no_flow_loss", True)
+        self.no_gan_feat_loss=self.args.get("no_ganFeat_loss", True)
+        self.no_lsgan = self.args.get("no_lsgan", True)
         self.dataroot = self.args.get("dataroot", './datasets/cityscapes/')
         self.criterionGAN = networks.GANLoss(use_lsgan=not self.no_lsgan, tensor=self.model.Tensor)   
         self.criterionFeat = torch.nn.L1Loss()
@@ -101,7 +101,6 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             losses = [torch.mean(x) if not isinstance(x, int) else x for x in losses]
             #20180930: Always return fake_B now, let super function decide whether to save it  
             self.log('train_generator_loss', sum(losses))      
-            print(x1.shape, y1.shape, gt1.shape)
             # log sampled images
             sample_imgs = [x1[0].squeeze(0), y1[0].squeeze(0), gt1[0].squeeze(0)]
             grid = torchvision.utils.make_grid(sample_imgs)
