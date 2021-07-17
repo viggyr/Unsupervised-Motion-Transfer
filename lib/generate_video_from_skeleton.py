@@ -6,6 +6,7 @@ from pathlib import Path
 import os
 from collections import OrderedDict
 from pathlib import Path
+from skeleton_to_human.face_enhancer.dataset import ImageFolderDataset
 from skeleton_to_human.options.test_options import TestOptions
 from skeleton_to_human.data.custom_dataset_data_loader import CreateDataset
 from skeleton_to_human.lit_models import Pose2Vid
@@ -49,7 +50,7 @@ def convert_skeleton_to_target(video_path, save_path, first_frame):
     frame_save_path=str(Path(save_path).parent/f"test_B/{sorted([f for f in os.listdir(save_dir) if not f.startswith('.')])[0]}")
     cv2.imwrite(frame_save_path,first_frame)
     fps = video.get(cv2.CAP_PROP_FPS)
-    dataset = AlignedPairDataset(opt)
+    dataset = AlignedPairDataset(opt, is_train=False)
 
     # test
     #model = create_model(opt)

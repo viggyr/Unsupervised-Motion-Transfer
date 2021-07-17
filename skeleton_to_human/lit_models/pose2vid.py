@@ -27,7 +27,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
         self.no_flow_loss=self.args.get("no_flow_loss", True)
         self.no_gan_feat_loss=self.args.get("no_ganFeat_loss", True)
         self.no_lsgan = self.args.get("no_lsgan", True)
-        self.dataroot = self.args.get("dataroot", './datasets/cityscapes/')
+        self.dataroot = self.args.get("dataroot", './datasets/dancing/')
         self.criterionGAN = networks.GANLoss(use_lsgan=not self.no_lsgan, tensor=self.model.Tensor)   
         self.criterionFeat = torch.nn.L1Loss()
         if not self.no_vgg_loss:             
