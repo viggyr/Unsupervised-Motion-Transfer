@@ -21,14 +21,16 @@ from tqdm import tqdm
 import cv2
 
 
-def save_frames_from_video(video_path, save_path, folder_name="test_A"):
+def save_frames_from_video(video_path, save_path, folder_name="test_A", failed=[]):
     i=0
     save_dir = str(Path(save_path).parent/folder_name)
     video=cv2.VideoCapture(video_path)
     os.makedirs(save_dir,exist_ok=True)
-    for img in frame_from_video(video):
+    for j,img in enumerate(frame_from_video(video)):
         #success, img = video.read()
         #if success:
+        if (j in failed):
+            continue
         cv2.imwrite(f"{save_dir}/{i:05d}.png",img)
         i+=1
         #else:

@@ -69,20 +69,22 @@ def find_video_keypoints(video_path: str):
     video=cv2.VideoCapture(video_path)
     video_keypoints=generate_keypoints(video)
     final_keypoints=None
+    failed=[]
     for i,frame_keypoints in enumerate(video_keypoints):
         try:
             frame_keypoints_transformed=convert_coco_to_openpose_cords(frame_keypoints.to("cpu").numpy()[-1:,:,:]).transpose(1,2,0)
             print(f"Frame {i} extracted")
         except:
             print(f"Failed to extact keypoints for frame {i}.")
+            failed.append(i)
             continue
         if final_keypoints is not None:
             final_keypoints=np.concatenate((final_keypoints, frame_keypoints_transformed), axis=2)
         else:
             final_keypoints=frame_keypoints_transformed
-    return final_keypoints
+    return final_keypoints, failed
 
 def extract_sequence(source_video_path):
-    source_keypoints=find_video_keypoints(source_video_path)
+    source_keypoints, failed=find_video_keypoints(source_video_path)
     #target_keypoints=find_video_keypoints(target_video_path)
-    return source_keypoints
+    return source_keypoints, failed
