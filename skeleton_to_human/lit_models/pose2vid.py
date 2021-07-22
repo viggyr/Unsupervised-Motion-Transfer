@@ -106,7 +106,10 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             # log sampled images
             sample_imgs = [tensor2label(x1[0].squeeze(0), self.opt.label_nc), tensor2im(y1[0].detach().squeeze(0)), tensor2im(gt1[0].squeeze(0))]
             grid = torchvision.utils.make_grid(sample_imgs)
-            save_image(grid.numpy(), f"outputs/training/batch_{batch_idx}.jpg")
+            #save_image(tensor2label(x1[0].squeeze(0)), f"outputs/training/batch_{batch_idx}_label.jpg")
+            #save_image(tensor2im(y1[0].detach().squeeze(0)), f"outputs/training/batch_{batch_idx}_output.jpg")
+            #save_image(tensor2im(gt1[0].squeeze(0)), f"outputs/training/batch_{batch_idx}_gt.jpg")
+
             self.logger.experiment.add_image('generated_images', grid, batch_idx)      
             return sum(losses)
         else:
