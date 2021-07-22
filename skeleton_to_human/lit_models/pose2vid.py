@@ -104,7 +104,7 @@ class Pose2Vid(BaseLitModel):  # pylint: disable=too-many-ancestors
             #20180930: Always return fake_B now, let super function decide whether to save it  
             self.log('train_generator_loss', sum(losses))      
             # log sampled images
-            sample_imgs = [tensor2label(x1[0].squeeze(0), self.opt.label_nc), tensor2im(y1[0].squeeze(0)), tensor2im(gt1[0].squeeze(0))]
+            sample_imgs = [tensor2label(x1[0].squeeze(0), self.opt.label_nc), tensor2im(y1[0].detach().squeeze(0)), tensor2im(gt1[0].squeeze(0))]
             grid = torchvision.utils.make_grid(sample_imgs)
             save_image(grid, f"outputs/training/batch_{batch_idx}.jpg")
             self.logger.experiment.add_image('generated_images', grid, batch_idx)      
