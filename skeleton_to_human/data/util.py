@@ -1,6 +1,7 @@
 """Base Dataset class."""
 from typing import Any, Callable, Dict, Sequence, Tuple, Union
 import torch
+from PIL import Image
 
 from .base_dataset import BaseDataset
 
@@ -15,3 +16,6 @@ def split_dataset(base_dataset: BaseDataset, fraction: float, seed: int) -> Tupl
     return torch.utils.data.random_split(  # type: ignore
         base_dataset, [split_a_size, split_b_size], generator=torch.Generator().manual_seed(seed)
     )
+def save_image(image_numpy, image_path):
+    image_pil = Image.fromarray(image_numpy)
+    image_pil.save(image_path)

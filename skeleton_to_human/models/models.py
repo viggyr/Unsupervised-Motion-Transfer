@@ -18,7 +18,7 @@ def create_model(opt):
     else:
         from .ui_model import UIModel
         model = UIModel()
-    model.initialize(opt)
+    #model.initialize(opt)
     if opt.verbose:
         print("model [%s] was created" % (model.name()))
 
