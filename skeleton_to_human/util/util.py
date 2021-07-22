@@ -21,7 +21,7 @@ def tensor2im(image_tensor, imtype=np.uint8, normalize=True):
     image_numpy = np.clip(image_numpy, 0, 255)
     if image_numpy.shape[2] == 1 or image_numpy.shape[2] > 3:        
         image_numpy = image_numpy[:,:,0]
-    return torch.from_numpy(image_numpy.astype(imtype))
+    return image_numpy.astype(imtype)
 
 # Converts a one-hot tensor into a colorful label map
 def tensor2label(label_tensor, n_label, imtype=np.uint8):
@@ -32,7 +32,7 @@ def tensor2label(label_tensor, n_label, imtype=np.uint8):
         label_tensor = label_tensor.max(0, keepdim=True)[1]
     label_tensor = Colorize(n_label)(label_tensor)
     label_numpy = np.transpose(label_tensor.numpy(), (1, 2, 0))
-    return torch.from_numpy(label_numpy.astype(imtype))
+    return label_numpy.astype(imtype)
 
 def save_image(image_numpy, image_path):
     image_pil = Image.fromarray(image_numpy)
