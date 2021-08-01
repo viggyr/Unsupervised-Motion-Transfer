@@ -23,7 +23,7 @@ class Pose2VidHDModel(torch.nn.Module):
         self.opt = opt
         #self.gpu_ids = opt.gpu_ids
         #self.isTrain = opt.isTrain
-        self.Tensor = torch.cuda.FloatTensor if opt.gpus else torch.Tensor
+        self.Tensor = torch.cuda.FloatTensor if int(opt.gpus)>0 else torch.Tensor
         #self.save_dir = os.path.join(opt.checkpoints_dir, opt.name)
         if opt.resize_or_crop != 'none': # when training at full res this causes OOM
             torch.backends.cudnn.benchmark = True
@@ -108,7 +108,8 @@ class Pose2VidHDModel(torch.nn.Module):
     def predict(self, label, inst, prev_frame):
         # Encode Inputs        
         input_label, inst_map, _, _ = self.encode_input(Variable(label), Variable(inst), infer=True)
-        if self.opt.gpus:
+        if int(self.opt.gpus)>0:
+            print("WTF!!")
             prev_frame = Variable(prev_frame.data.cuda())
 
         # # Fake Generation

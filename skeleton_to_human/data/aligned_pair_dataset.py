@@ -1,10 +1,11 @@
 ### Copyright (C) 2017 NVIDIA Corporation. All rights reserved. 
 ### Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 import os.path
-from .base_dataset import BaseDataset, get_params, get_transform, normalize
+from .util import get_params, get_transform
 from .image_folder import make_dataset
 from PIL import Image
 import torch
+import torch.utils.data as data
 
 '''
  __getitem__ returns N consecutive frames 
@@ -14,7 +15,7 @@ import torch
 '''
 
 
-class AlignedPairDataset(BaseDataset):
+class AlignedPairDataset(data.Dataset):
     def __init__(self, opt, is_train:bool=True):
         self.opt = opt
         self.root = opt.dataroot    
@@ -25,7 +26,6 @@ class AlignedPairDataset(BaseDataset):
         self.A_paths = sorted(make_dataset(self.dir_A))
 
         ### input B (real images)
-        #if opt.isTrain:
         dir_B = '_B' if self.opt.label_nc == 0 else '_img'
         self.dir_B = os.path.join(opt.dataroot, opt.phase + dir_B)
         self.B_paths = sorted(make_dataset(self.dir_B))
