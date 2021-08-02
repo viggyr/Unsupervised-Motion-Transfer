@@ -5,6 +5,9 @@ import torch.nn as nn
 import functools
 from torch.autograd import Variable
 import numpy as np
+from .spynet import SpyNetwork
+import cv2
+
 
 ###############################################################################
 # Functions
@@ -26,32 +29,36 @@ def get_norm_layer(norm_type='instance'):
         raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
     return norm_layer
 
+
+# TODO: 20180929: Generator Input contains two images...
 def define_G(input_nc, output_nc, ngf, netG, n_downsample_global=3, n_blocks_global=9, n_local_enhancers=1, 
-             n_blocks_local=3, norm='instance', gpu_ids=[]):    
+             n_blocks_local=3, norm='instance'):    
     norm_layer = get_norm_layer(norm_type=norm)     
     if netG == 'global':    
         netG = GlobalGenerator(input_nc, output_nc, ngf, n_downsample_global, n_blocks_global, norm_layer)       
     elif netG == 'local':        
-        netG = LocalEnhancer(input_nc, output_nc, ngf, n_downsample_global, n_blocks_global, 
-                                  n_local_enhancers, n_blocks_local, norm_layer)
+        netG = LocalEnhancer(input_nc, output_nc, ngf, n_downsample_global, n_blocks_global,
+                             n_local_enhancers, n_blocks_local, norm_layer)
     elif netG == 'encoder':
         netG = Encoder(input_nc, output_nc, ngf, n_downsample_global, norm_layer)
     else:
         raise('generator not implemented!')
-    #Todo: Verbose mode according to pytorch lightning. 
-    if len(gpu_ids) > 0:
-        assert(torch.cuda.is_available())   
-        netG.cuda(gpu_ids[0])
+    #print(netG)
+    # if len(gpu_ids) > 0:
+    #     assert(torch.cuda.is_available())   
+    #     netG.cuda(gpu_ids[0])
     netG.apply(weights_init)
     return netG
 
-def define_D(input_nc, ndf, n_layers_D, norm='instance', use_sigmoid=False, num_D=1, getIntermFeat=False, gpu_ids=[]):        
+
+# TODO: 20180929: Discriminator Input contains two pairs...
+def define_D(input_nc, ndf, n_layers_D, norm='instance', use_sigmoid=False, num_D=1, getIntermFeat=False):        
     norm_layer = get_norm_layer(norm_type=norm)   
     netD = MultiscaleDiscriminator(input_nc, ndf, n_layers_D, norm_layer, use_sigmoid, num_D, getIntermFeat)   
-    print(netD)
-    if len(gpu_ids) > 0:
-        assert(torch.cuda.is_available())
-        netD.cuda(gpu_ids[0])
+    #print(netD)
+    # if len(gpu_ids) > 0:
+    #     assert(torch.cuda.is_available())
+    #     netD.cuda(gpu_ids[0])
     netD.apply(weights_init)
     return netD
 
@@ -111,6 +118,7 @@ class GANLoss(nn.Module):
             target_tensor = self.get_target_tensor(input[-1], target_is_real)
             return self.loss(input[-1], target_tensor)
 
+
 class VGGLoss(nn.Module):
     def __init__(self):
         super(VGGLoss, self).__init__()        
@@ -126,6 +134,37 @@ class VGGLoss(nn.Module):
         return loss
 
 
+# 20181012 Implement flow loss.
+# 20181020 show flow in rgb, check
+def flow2im(flow):
+    flow_npy = np.array(flow.detach().cpu().numpy().transpose(1, 2, 0), np.float32)
+    shape = flow_npy.shape[:-1]
+    hsv = np.zeros(shape + (3,), dtype=np.uint8)
+    hsv[..., 2] = 255
+
+    mag, ang = cv2.cartToPolar(flow_npy[..., 0], flow_npy[..., 1])
+    hsv[..., 0] = ang * 180 / np.pi / 2
+    hsv[..., 1] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    return bgr 
+    
+class FlowLoss(nn.Module):
+    def __init__(self):
+        super(FlowLoss, self).__init__()
+        self.flownet = SpyNetwork().cuda()
+        self.criterion = nn.L1Loss()
+        self.count = 0
+
+    def forward(self, real1, real2, fake1, fake2):
+        real_flow, fake_flow = self.flownet(real1, real2), self.flownet(fake1, fake2)
+        # 20181020: print flow images
+        # cv2.imwrite('./spynet_flow_2/{:03d}_real_flow.png'.format(self.count), flow2im(real_flow))
+        # cv2.imwrite('./spynet_flow_2/{:03d}_fake_flow.png'.format(self.count), flow2im(fake_flow))
+        # self.count += 1
+        
+        return self.criterion(real_flow, fake_flow)
+
+
 ##############################################################################
 # Generator
 ##############################################################################
@@ -137,8 +176,10 @@ class LocalEnhancer(nn.Module):
         
         ###### global generator model #####           
         ngf_global = ngf * (2**n_local_enhancers)
-        model_global = GlobalGenerator(input_nc, output_nc, ngf_global, n_downsample_global, n_blocks_global, norm_layer).model        
-        model_global = [model_global[i] for i in range(len(model_global)-3)] # get rid of final convolution layers        
+        model_global = GlobalGenerator(input_nc, output_nc, ngf_global, n_downsample_global,
+                                       n_blocks_global, norm_layer).model
+
+        model_global = [model_global[i] for i in range(len(model_global)-3)]  # get rid of final convolution layers
         self.model = nn.Sequential(*model_global)                
 
         ###### local enhancer layers #####
@@ -167,7 +208,8 @@ class LocalEnhancer(nn.Module):
         
         self.downsample = nn.AvgPool2d(3, stride=2, padding=[1, 1], count_include_pad=False)
 
-    def forward(self, input): 
+    # 20180929: change input style
+    def forward(self, input):
         ### create input pyramid
         input_downsampled = [input]
         for i in range(self.n_local_enhancers):
@@ -179,8 +221,7 @@ class LocalEnhancer(nn.Module):
         for n_local_enhancers in range(1, self.n_local_enhancers+1):
             model_downsample = getattr(self, 'model'+str(n_local_enhancers)+'_1')
             model_upsample = getattr(self, 'model'+str(n_local_enhancers)+'_2')            
-            input_i = input_downsampled[self.n_local_enhancers-n_local_enhancers]
-            #print('input_i', input_i.shape, 'output_prev', output_prev.shape)
+            input_i = input_downsampled[self.n_local_enhancers-n_local_enhancers]            
             output_prev = model_upsample(model_downsample(input_i) + output_prev)
         return output_prev
 

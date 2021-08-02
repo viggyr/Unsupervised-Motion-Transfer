@@ -4,7 +4,6 @@ import numpy as np
 import torch
 import os
 from torch.autograd import Variable
-from .base_model import BaseModel
 # from .net import networks
 from . import networks_modified as networks
 
