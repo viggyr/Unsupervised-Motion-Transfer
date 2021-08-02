@@ -1,14 +1,11 @@
-### Contributions
-* End-to-End interface for 3D avatar animation by leveraging opensource projects and collating them under a single roof. 
-    * Created the entire repo with a structure according to the flow described in the report/ppt.
-    * Wrote all the code under lib folder.
-    * Fixed bugs in the open source repos - transmomo and everybodydancenow - Modified file motion_transfer/util/visualization function joints2image to typecast the color values. 
-    
-* Implemented target image support in motion_transfer. 
-    * Added lines 52-85, 200-201, modified lines 178 to 185 in network.py.
-    * Added lines 54-60 in transmomo_solo_dance.yaml.
+End to End interface for transferring the motion from source to target video.
 
-## Usage
+This repo is mainly broken down into three parts
+
+1. skeleton_to_human - Pytorch Lightning version of the Everybody Dance Now architecture.
+2. motion_transfer - Transmomo architecture (Will be ported to Pytorch lightning soon.)
+3. training - Use to train skeleton_to_human. (training for transmomo to be added soon after developing a pytorch lightning version of the same.)
+
 
 ### Requirements.txt
 ```
@@ -27,5 +24,5 @@ python animate.py -s inputs/video-clip.mp4 -t inputs/video-source-spiderman.mp4 
 #### 4. Check the outputs directory for the output video.
 
 ## Training
-### For training skeleton-to-video refer https://github.com/viggyr/skeleton_to_human
+### For training skeleton-to-video refer (/skeleton-to-videe)
 ### For training transmomo model, refer https://github.com/viggyr/motion_transfer
