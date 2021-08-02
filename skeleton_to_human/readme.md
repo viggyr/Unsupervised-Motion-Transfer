@@ -3,8 +3,6 @@ This is the pytorch lightning version of [Transmomo](https://github.com/yzhq97/t
 ## Directory Structure
 
 ```sh
-(fsdl-text-recognizer-2021) ➜  lab1 git:(main) ✗ tree -I "logs|admin|wandb|__pycache__"
-.
 ├── readme.md
 ├── skeleton_to_human
 │   ├── data
